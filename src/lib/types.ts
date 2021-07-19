@@ -1,4 +1,4 @@
-export interface Page {
+export interface TelegraphPage {
   /** Path to the page */
   path: string;
   /** URL of the page */
@@ -17,15 +17,15 @@ export interface Page {
   /** Image URL of the page */
   image_url?: string;
   /** Content of the page */
-  content?: Node[];
+  content?: TelegraphNode[];
   /** Number of page views for the page */
   views: number;
   /** Only returned if access_token passed. True, if the target Telegraph account can edit the page */
   can_edit?: boolean;
 }
 
-export interface Node {
+export interface TelegraphNode {
   tag: string;
   attrs?: Record<string, string>;
-  children?: (Node | string)[];
+  children?: (TelegraphNode | string)[];
 }

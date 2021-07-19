@@ -1,5 +1,5 @@
 import { program } from 'commander';
-import { getApi, getConfig, setConfig } from 'lib';
+import { getApi, getConfig, parseMarkdownFile, setConfig } from 'lib';
 import { errToStr, isStr, log, numOrUndef } from 'utils';
 
 const getToken = (opt: Record<string, string>): string | undefined => {
@@ -21,6 +21,18 @@ program
   .description('set default access token')
   .action((token: string) => {
     setConfig({ token });
+  });
+
+program
+  .command('createPage')
+  .description('create a new page')
+  .argument('<file>', 'path to a markdown file with content')
+  .action((fileName: string) => {
+    try {
+      const content = parseMarkdownFile(fileName);
+    } catch (err: unknown) {
+      log.errAndExit(errToStr(err));
+    }
   });
 
 program
