@@ -1,7 +1,7 @@
 {
   "name": "telegraph-cli",
   "version": "1.0.0",
-  "description": "CLI tool for telegra.ph platform",
+  "description": "CLI tool for telegra.ph blog platform",
   "main": "index.js",
   "license": "MIT",
   "bin": {
