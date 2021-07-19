@@ -17,6 +17,8 @@ export const isNull = (val: unknown): val is null => val === null;
 
 export const isUndef = (val: unknown): val is undefined => typeof val === 'undefined';
 
+export const isStrOrUndef = (val: unknown): val is string | undefined => isStr(val) || isUndef(val);
+
 type UnknownFunc = (...args: unknown[]) => unknown;
 
 export const isFunc = (val: unknown): val is UnknownFunc => {

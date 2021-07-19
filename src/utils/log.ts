@@ -21,7 +21,7 @@ export const log = {
     process.exit(1);
   },
   simple: (...args: unknown[]) => console.log(...args),
-  json: (data: unknown) => console.log(JSON.stringify(data)),
+  json: (data: unknown) => console.log(JSON.stringify(data, null, 2)),
   simpleAndExit: (...args: unknown[]) => {
     console.log(...args);
     process.exit(0);
