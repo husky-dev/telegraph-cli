@@ -1,0 +1,59 @@
+{
+  "name": "telegraph-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for telegra.ph platform",
+  "main": "index.js",
+  "license": "MIT",
+  "bin": {
+    "telegraph": "./dist/index.js"
+  },
+  "author": "Jaroslav Khorishchenko <jaro@smartapp.dev>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/husky-dev/telegraph-cli.git"
+  },
+  "files": [
+    "README.md",
+    "package.json",
+    "LICENSE",
+    "dist"
+  ],
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "start:dev": "nodemon --watch \"src/**\" --ext \"ts,json,html\" --ignore \"src/**/*.spec.ts\" --exec \"yarn dist:dev\"",
+    "dist": "yarn dist:dev",
+    "dist:dev": "webpack --mode=development",
+    "dist:prd": "webpack --mode=production",
+    "link": "yarn global add file:$PWD",
+    "lint": "yarn lint:types && yarn lint:eslint",
+    "lint:types": "tsc --noEmit --skipLibCheck",
+    "lint:eslint": "eslint \"src/**\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "clear": "rm -rf .cache dist",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "{*.ts,*tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "16.3.3",
+    "@typescript-eslint/eslint-plugin": "4.28.3",
+    "@typescript-eslint/parser": "4.28.3",
+    "axios": "0.21.1",
+    "commander": "8.0.0",
+    "eslint": "7.31.0",
+    "husky": "7.0.1",
+    "lint-staged": "11.0.1",
+    "nodemon": "2.0.12",
+    "prettier": "2.3.2",
+    "ts-loader": "9.2.3",
+    "tsconfig-paths": "3.10.1",
+    "tsconfig-paths-webpack-plugin": "3.5.1",
+    "typescript": "4.3.5",
+    "webpack": "5.45.1",
+    "webpack-cli": "4.7.2"
+  }
+}
