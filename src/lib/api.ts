@@ -3,6 +3,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { isStr, isUnknownDict } from 'utils';
 import { APIError } from './errors';
+import { Page } from './types';
 
 interface ApiOpt {
   token?: string;
@@ -60,9 +61,9 @@ export const getApi = (apiOpt?: ApiOpt) => {
 
   return {
     getPage: async (path: string, params?: { return_content?: boolean }) =>
-      apiReq({ auth: false, method: 'GET', path: `getPage/${path}`, params }),
+      apiReq<Page>({ auth: false, method: 'GET', path: `getPage/${path}`, params }),
     getPageList: async (params?: { limit?: number; offset?: number }) =>
-      apiReq({ auth: true, method: 'GET', path: 'getPageList', params }),
+      apiReq<{ total_count: number; pages: Page[] }>({ auth: true, method: 'GET', path: 'getPageList', params }),
   };
 };
 
