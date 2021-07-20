@@ -62,7 +62,7 @@ const astToTelegraphNode = (val: Node): TelegraphNode | string => {
 
 const headingToNode = (val: Heading): TelegraphNode => {
   const { depth } = val;
-  if (depth >= 3) return { tag: 'h3', children: val.children.map(astToTelegraphNode) };
+  if (depth <= 3) return { tag: 'h3', children: val.children.map(astToTelegraphNode) };
   else return { tag: 'h4', children: val.children.map(astToTelegraphNode) };
 };
 

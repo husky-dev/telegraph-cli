@@ -2,8 +2,8 @@ import { parseMarkdownStr } from './md';
 
 describe('parseMarkdownStr', () => {
   it('should parse heading', () => {
-    expect(parseMarkdownStr('# Hello')).toEqual([{ tag: 'h1', children: ['Hello'] }]);
-    expect(parseMarkdownStr('###### Hello')).toEqual([{ tag: 'h6', children: ['Hello'] }]);
+    expect(parseMarkdownStr('# Hello')).toEqual([{ tag: 'h3', children: ['Hello'] }]);
+    expect(parseMarkdownStr('###### Hello')).toEqual([{ tag: 'h4', children: ['Hello'] }]);
   });
 
   it('should parse paragraph', () => {
