@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { program } from 'commander';
-import { getApi, getConfig, TelegraphAccountField, parseMarkdownFile, setConfig, isTelegraphAccountField } from 'lib';
+import { getApi, getConfig, isTelegraphAccountField, parseMarkdownFile, setConfig, TelegraphAccountField } from 'lib';
 import { errToStr, isStr, log, LogLevel, numOrUndef } from 'utils';
 
 const getToken = (opt: Record<string, string | boolean>): string | undefined => {
@@ -106,6 +106,22 @@ program
     try {
       const api = getApi({ token: getToken(opt) });
       const resp = await api.getAccountInfo({ fields: fields ? strToAccountFields(fields) : undefined });
+      log.json(resp);
+    } catch (err: unknown) {
+      log.errAndExit(errToStr(err));
+    }
+  });
+
+program
+  .command('revokeAccessToken')
+  .description(
+    `Use this method to revoke access_token and generate a new one, for example, if the user would like to reset all connected sessions, or you have reasons to believe the token was compromised. On success, returns an Account object with new access_token and auth_url fields.`,
+  )
+  .option('-t, --token <token>', 'Access token of the Telegraph account')
+  .action(async (opt: { token?: string }) => {
+    try {
+      const api = getApi({ token: getToken(opt) });
+      const resp = await api.revokeAccessToken();
       log.json(resp);
     } catch (err: unknown) {
       log.errAndExit(errToStr(err));

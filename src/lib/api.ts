@@ -83,6 +83,8 @@ export const getApi = (apiOpt?: ApiOpt) => {
   const getAccountInfo = async (data: { fields?: TelegraphAccountField[] }) =>
     apiReq<TelegraphAccount>({ auth: true, path: `getAccountInfo`, data });
 
+  const revokeAccessToken = async () => apiReq<TelegraphAccount>({ auth: true, path: `revokeAccessToken` });
+
   const createPage = async (data: {
     title: string;
     author_name?: string;
@@ -101,6 +103,7 @@ export const getApi = (apiOpt?: ApiOpt) => {
     createAccount,
     editAccountInfo,
     getAccountInfo,
+    revokeAccessToken,
     createPage,
     getPage,
     getPageList,
