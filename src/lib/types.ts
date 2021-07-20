@@ -25,6 +25,8 @@ export interface TelegraphAccount {
   page_count?: number;
 }
 
+export type TelegraphAccountFields = 'short_name' | 'author_name' | 'author_url' | 'auth_url' | 'page_count';
+
 export interface TelegraphPageList {
   /** Total number of pages belonging to the target Telegraph account. */
   total_count: number;

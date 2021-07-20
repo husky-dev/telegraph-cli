@@ -60,10 +60,32 @@ program
   });
 
 program
+  .command('editAccountInfo')
+  .description(
+    `Use this method to update information about a Telegraph account. Pass only the parameters that you want to edit. On success, returns an Account object with the default fields.`,
+  )
+  .option('--short_name <short_name>', `New account name.`)
+  .option('--author_name <author_name>', 'New default author name used when creating new articles.')
+  .option(
+    '--author_url <author_url>',
+    `New default profile link, opened when users click on the author's name below the title. Can be any link, not necessarily to a Telegram profile or channel.`,
+  )
+  .option('-t, --token <token>', 'Access token of the Telegraph account')
+  .action(async (opt: { short_name?: string; author_name?: string; author_url?: string; token?: string }) => {
+    const { short_name, author_name, author_url } = opt;
+    try {
+      const api = getApi({ token: getToken(opt) });
+      const resp = await api.editAccountInfo({ short_name, author_name, author_url });
+      log.json(resp);
+    } catch (err: unknown) {
+      log.errAndExit(errToStr(err));
+    }
+  });
+
+program
   .command('createPage')
   .description('create a new page')
   .argument('<file>', 'path to a markdown file with content')
-  .option('-t, --token <token>', 'access token of the Telegraph account')
   .option('--title <title>', 'page title (required)')
   .option('--author_name <author_name>', `author name, displayed below the article's title`)
   .option(
@@ -71,6 +93,7 @@ program
     `profile link, opened when users click on the author's name below the title. Can be any link, not necessarily to a Telegram profile or channel`,
   )
   .option('--return_content', 'if true, content field will be returned in Page object')
+  .option('-t, --token <token>', 'Access token of the Telegraph account')
   .action(
     async (
       fileName: string,
