@@ -7,7 +7,7 @@ export enum LogLevel {
   verbose = 3,
 }
 
-let level: LogLevel = LogLevel.verbose;
+let level: LogLevel = LogLevel.info;
 
 export const log = {
   err: (...args: unknown[]) => (level >= LogLevel.err ? console.log(`[x]:`, ...args) : undefined),

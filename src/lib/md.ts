@@ -60,9 +60,13 @@ const astToTelegraphNode = (val: Node): TelegraphNode | string => {
   return `${JSON.stringify(val)}`;
 };
 
-const headingToNode = (val: Heading) => ({ tag: `h${val.depth}`, children: val.children.map(astToTelegraphNode) });
+const headingToNode = (val: Heading): TelegraphNode => {
+  const { depth } = val;
+  if (depth >= 3) return { tag: 'h3', children: val.children.map(astToTelegraphNode) };
+  else return { tag: 'h4', children: val.children.map(astToTelegraphNode) };
+};
 
-const imageToNode = ({ url, alt }: Image) => {
+const imageToNode = ({ url, alt }: Image): TelegraphNode => {
   const children: TelegraphNode[] = [{ tag: 'img', attrs: { src: url } }];
   if (alt) {
     children.push({ tag: 'figcaption', children: [alt] });
@@ -112,8 +116,9 @@ const inlineCodeToNode = (val: InlineCode): TelegraphNode => ({
   children: [val.value],
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const thematicBreakToNode = (val: ThematicBreak): TelegraphNode => ({
-  tag: val.type,
+  tag: 'hr',
 });
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-unsafe-call

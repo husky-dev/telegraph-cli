@@ -1,3 +1,37 @@
+export interface TelegraphAccount {
+  /**
+   * Account name, helps users with several accounts remember which they are currently using.
+   * Displayed to the user above the "Edit/Publish" button on Telegra.ph, other users don't see this name.
+   * */
+  short_name: string;
+  /** Default author name used when creating new articles. */
+  author_name: string;
+  /**
+   * Profile link, opened when users click on the author's name below the title. Can be any link,
+   * not necessarily to a Telegram profile or channel.
+   * */
+  author_url: string;
+  /**
+   * Optional. Only returned by the createAccount and revokeAccessToken method.
+   * Access token of the Telegraph account.
+   * */
+  access_token?: string;
+  /**
+   * Optional. URL to authorize a browser on telegra.ph and connect it to a Telegraph account.
+   * This URL is valid for only one use and for 5 minutes only.
+   * */
+  auth_url?: string;
+  /** Optional. Number of pages belonging to the Telegraph account. */
+  page_count?: number;
+}
+
+export interface TelegraphPageList {
+  /** Total number of pages belonging to the target Telegraph account. */
+  total_count: number;
+  /** Requested pages of the target Telegraph account. */
+  pages: TelegraphPage[];
+}
+
 export interface TelegraphPage {
   /** Path to the page */
   path: string;
@@ -25,12 +59,53 @@ export interface TelegraphPage {
 }
 
 export interface TelegraphNode {
-  tag: string;
+  /**
+   * Name of the DOM element. Available tags:
+   * `a`, `aside`, `b`, `blockquote`, `br`, `code`,
+   * `em`, `figcaption`, `figure`, `h3`, `h4`, `hr`, `i`, `iframe`, `img`, `li`, `ol`,
+   * `p`, `pre`, `s`, `strong`, `u`, `ul`, `video`.
+   */
+  tag: TelegraphNodeTag;
+  /**
+   * Attributes of the DOM element. Key of object represents name of attribute, value represents
+   * value of attribute. Available attributes: `href`, `src`
+   * */
   attrs?: Record<string, string>;
   children?: TelegraphChild[];
 }
 
+export type TelegraphNodeTag =
+  | 'a'
+  | 'aside'
+  | 'b'
+  | 'blockquote'
+  | 'br'
+  | 'code'
+  | 'em'
+  | 'figcaption'
+  | 'figure'
+  | 'h3'
+  | 'h4'
+  | 'hr'
+  | 'i'
+  | 'iframe'
+  | 'img'
+  | 'li'
+  | 'ol'
+  | 'p'
+  | 'pre'
+  | 's'
+  | 'strong'
+  | 'u'
+  | 'ul'
+  | 'video';
+
 export type TelegraphChild = TelegraphNode | string;
+
+export interface TelegraphPageViews {
+  /** Number of page views for the target page. */
+  views: number;
+}
 
 /**
   # Examples

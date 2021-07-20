@@ -28,9 +28,35 @@ const initProgram = () => {
 program
   .command('setAccessToken')
   .argument('<token>', 'telega.ph access token')
-  .description('set default access token')
+  .description('Set default access token')
   .action((token: string) => {
     setConfig({ token });
+  });
+
+program
+  .command('createAccount')
+  .description(
+    `Use this method to create a new Telegraph account. Most users only need one account, but this can be useful for channel administrators who would like to keep individual author names and profile links for each of their channels. On success, returns an Account object with the regular fields and an additional access_token field.`,
+  )
+  .option(
+    '--short_name <short_name>',
+    `Required, Account name, helps users with several accounts remember which they are currently using. Displayed to the user above the "Edit/Publish" button on Telegra.ph, other users don't see this name.`,
+  )
+  .option('--author_name <author_name>', 'Default author name used when creating new articles.')
+  .option(
+    '--author_url <author_url>',
+    `Default profile link, opened when users click on the author's name below the title. Can be any link, not necessarily to a Telegram profile or channel.`,
+  )
+  .action(async (opt: { short_name?: string; author_name?: string; author_url?: string }) => {
+    const { short_name, author_name, author_url } = opt;
+    if (!short_name) return log.errAndExit('short_name required');
+    try {
+      const api = getApi();
+      const resp = await api.createAccount({ short_name, author_name, author_url });
+      log.json(resp);
+    } catch (err: unknown) {
+      log.errAndExit(errToStr(err));
+    }
   });
 
 program
