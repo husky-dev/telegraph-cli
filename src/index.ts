@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { program } from 'commander';
 import { getApi, getConfig, parseMarkdownFile, setConfig } from 'lib';
-import { errToStr, isStr, log, numOrUndef } from 'utils';
+import { errToStr, isStr, log, LogLevel, numOrUndef } from 'utils';
 
 const getToken = (opt: Record<string, string | boolean>): string | undefined => {
   if (isStr(opt.token)) return opt.token;
@@ -15,6 +15,15 @@ program
   .description(DESCRIPTION)
   .version(VERSION, '-v, --version', 'output the current version')
   .option('--debug', 'output extra debugging');
+
+const initProgram = () => {
+  const opts = program.opts();
+  if (opts.debug) {
+    log.setLevel(LogLevel.verbose);
+  } else {
+    log.setLevel(LogLevel.err);
+  }
+};
 
 program
   .command('setAccessToken')
@@ -41,6 +50,7 @@ program
       fileName: string,
       opt: { token?: string; title?: string; author_name?: string; author_url?: string; return_content?: boolean },
     ) => {
+      initProgram();
       const { title, author_name, author_url, return_content } = opt;
       if (!title) {
         return log.errAndExit('title required');
@@ -65,6 +75,7 @@ program
   )
   .option('--return_content', 'if true, content field will be returned in Page object')
   .action(async (path: string, opt: { return_content?: boolean }) => {
+    initProgram();
     const { return_content } = opt;
     try {
       const api = getApi();
@@ -84,6 +95,7 @@ program
   .option('-o, --offset <offset>', 'sequential number of the first page to be returned', '0')
   .option('-l, --limit <limit>', 'limits the number of pages to be retrieved', '50')
   .action(async (opt: { token?: string; offset?: string; limit?: string }) => {
+    initProgram();
     const { offset, limit } = opt;
     try {
       const api = getApi({ token: getToken(opt) });
