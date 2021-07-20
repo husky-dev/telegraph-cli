@@ -1,3 +1,5 @@
+import { isStr } from 'utils';
+
 export interface TelegraphAccount {
   /**
    * Account name, helps users with several accounts remember which they are currently using.
@@ -25,7 +27,10 @@ export interface TelegraphAccount {
   page_count?: number;
 }
 
-export type TelegraphAccountFields = 'short_name' | 'author_name' | 'author_url' | 'auth_url' | 'page_count';
+export type TelegraphAccountField = 'short_name' | 'author_name' | 'author_url' | 'auth_url' | 'page_count';
+
+export const isTelegraphAccountField = (val: unknown): val is TelegraphAccountField =>
+  isStr(val) && ['short_name', 'author_name', 'author_url', 'auth_url', 'page_count'].includes(val);
 
 export interface TelegraphPageList {
   /** Total number of pages belonging to the target Telegraph account. */

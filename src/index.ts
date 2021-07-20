@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import { program } from 'commander';
-import { getApi, getConfig, parseMarkdownFile, setConfig } from 'lib';
+import { getApi, getConfig, TelegraphAccountField, parseMarkdownFile, setConfig, isTelegraphAccountField } from 'lib';
 import { errToStr, isStr, log, LogLevel, numOrUndef } from 'utils';
 
 const getToken = (opt: Record<string, string | boolean>): string | undefined => {
@@ -8,6 +8,17 @@ const getToken = (opt: Record<string, string | boolean>): string | undefined => 
   const storedToken = getConfig()?.token;
   if (storedToken) return storedToken;
   return undefined;
+};
+
+const strToAccountFields = (val: string): TelegraphAccountField[] => {
+  const res: TelegraphAccountField[] = [];
+  for (const item of val.split(',')) {
+    if (!isTelegraphAccountField(item)) {
+      throw new Error(`"${item}" is not acocunt field`);
+    }
+    res.push(item);
+  }
+  return res;
 };
 
 program
@@ -76,6 +87,25 @@ program
     try {
       const api = getApi({ token: getToken(opt) });
       const resp = await api.editAccountInfo({ short_name, author_name, author_url });
+      log.json(resp);
+    } catch (err: unknown) {
+      log.errAndExit(errToStr(err));
+    }
+  });
+
+program
+  .command('getAccountInfo')
+  .description(`Use this method to get information about a Telegraph account. Returns an Account object on success.`)
+  .option(
+    '-f, --fields <fields>',
+    `List of account fields to return. Available fields: short_name, author_name, author_url, auth_url, page_count.`,
+  )
+  .option('-t, --token <token>', 'Access token of the Telegraph account')
+  .action(async (opt: { fields?: string; token?: string }) => {
+    const { fields } = opt;
+    try {
+      const api = getApi({ token: getToken(opt) });
+      const resp = await api.getAccountInfo({ fields: fields ? strToAccountFields(fields) : undefined });
       log.json(resp);
     } catch (err: unknown) {
       log.errAndExit(errToStr(err));

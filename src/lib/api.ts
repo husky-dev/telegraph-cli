@@ -2,7 +2,7 @@ import axios from 'axios';
 import { isStr, isUnknownDict, log } from 'utils';
 
 import { APIError } from './errors';
-import { TelegraphAccount, TelegraphAccountFields, TelegraphChild, TelegraphPage, TelegraphPageList } from './types';
+import { TelegraphAccount, TelegraphAccountField, TelegraphChild, TelegraphPage, TelegraphPageList } from './types';
 
 interface ApiOpt {
   token?: string;
@@ -80,7 +80,7 @@ export const getApi = (apiOpt?: ApiOpt) => {
   const editAccountInfo = async (data: { short_name?: string; author_name?: string; author_url?: string }) =>
     apiReq<TelegraphAccount>({ auth: true, path: `editAccountInfo`, data });
 
-  const getAccountInfo = async (data: { fields?: TelegraphAccountFields }) =>
+  const getAccountInfo = async (data: { fields?: TelegraphAccountField[] }) =>
     apiReq<TelegraphAccount>({ auth: true, path: `getAccountInfo`, data });
 
   const createPage = async (data: {
