@@ -2,20 +2,18 @@
 export enum LogLevel {
   none = -1,
   err = 0,
-  warn = 1,
-  info = 2,
-  debug = 3,
-  trace = 4,
+  info = 1,
+  debug = 2,
+  verbose = 3,
 }
 
-let level: LogLevel = LogLevel.info;
+let level: LogLevel = LogLevel.verbose;
 
 export const log = {
   err: (...args: unknown[]) => (level >= LogLevel.err ? console.log(`[x]:`, ...args) : undefined),
-  warn: (...args: unknown[]) => (level >= LogLevel.warn ? console.log(`[!]:`, ...args) : undefined),
   info: (...args: unknown[]) => (level >= LogLevel.info ? console.log(`[+]:`, ...args) : undefined),
   debug: (...args: unknown[]) => (level >= LogLevel.debug ? console.log(`[-]:`, ...args) : undefined),
-  trace: (...args: unknown[]) => (level >= LogLevel.trace ? console.log(`[*]:`, ...args) : undefined),
+  verbose: (...args: unknown[]) => (level >= LogLevel.verbose ? console.log(`[*]:`, ...args) : undefined),
   errAndExit: (...args: unknown[]) => {
     console.log(`[x]:`, ...args);
     process.exit(1);

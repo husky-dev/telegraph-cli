@@ -1,19 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
-import axios, { AxiosRequestConfig } from 'axios';
-import { isStr, isUnknownDict } from 'utils';
+import axios from 'axios';
+import { isStr, isUnknownDict, log } from 'utils';
+
 import { APIError } from './errors';
+import { TelegraphChild, TelegraphPage } from './types';
 
 interface ApiOpt {
   token?: string;
 }
 
 interface ApiReqOpt {
-  method: 'POST' | 'GET';
   path: string;
   auth: boolean;
   data?: unknown;
-  params?: Record<string, string | number | boolean>;
 }
 
 interface ApiRespOpt<R = unknown> {
@@ -26,22 +24,40 @@ export const getApi = (apiOpt?: ApiOpt) => {
   const token = apiOpt?.token;
 
   const apiReq = async <R = unknown>(reqOpt: ApiReqOpt) => {
-    const { method, path, data, auth } = reqOpt;
+    const { path, auth } = reqOpt;
     if (auth && !token) {
       throw new Error('access token not provided, use setAccessToken command or --token param');
     }
+
+    const getData = () => {
+      const { data } = reqOpt;
+      if (!auth) {
+        return data;
+      } else {
+        if (isUnknownDict(data)) {
+          return { ...data, access_token: token };
+        } else {
+          return { access_token: token };
+        }
+      }
+    };
+
     const url = `https://api.telegra.ph/${path}`;
-    const params = reqOpt.params ? { ...reqOpt.params, access_token: token } : { access_token: token };
-    const config: AxiosRequestConfig = { data, params };
+    const reqData = getData();
+    log.verbose('api req', `url=${url}`, `data=${JSON.stringify(reqData)}`);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {
       status,
       statusText,
       data: body,
-    } = method === 'GET' ? await axios.get<ApiRespOpt<R>>(url, config) : await axios.post<ApiRespOpt<R>>(url, config);
+    } = await axios.post<ApiRespOpt<R>>(url, reqData ? JSON.stringify(reqData) : undefined, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    log.verbose('api req done', `status=${status}`, `body=${JSON.stringify(body)}`);
     if (!isRespOk(status)) {
       throw new APIError(statusText, status);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!body) {
       throw new Error('Resonse body is empty');
     }
@@ -59,10 +75,17 @@ export const getApi = (apiOpt?: ApiOpt) => {
   };
 
   return {
-    getPage: async (path: string, params?: { return_content?: boolean }) =>
-      apiReq({ auth: false, method: 'GET', path: `getPage/${path}`, params }),
-    getPageList: async (params?: { limit?: number; offset?: number }) =>
-      apiReq({ auth: true, method: 'GET', path: 'getPageList', params }),
+    createPage: async (data: {
+      title: string;
+      author_name?: string;
+      author_url?: string;
+      content: TelegraphChild[];
+      return_content?: boolean;
+    }) => apiReq<TelegraphPage>({ auth: true, path: `createPage`, data }),
+    getPage: async (path: string, data?: { return_content?: boolean }) =>
+      apiReq<TelegraphPage>({ auth: false, path: `getPage/${path}`, data }),
+    getPageList: async (data?: { limit?: number; offset?: number }) =>
+      apiReq<{ total_count: number; pages: TelegraphPage[] }>({ auth: true, path: 'getPageList', data }),
   };
 };
 

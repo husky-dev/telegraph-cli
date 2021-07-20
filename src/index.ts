@@ -1,8 +1,9 @@
+/* eslint-disable max-len */
 import { program } from 'commander';
-import { getApi, getConfig, setConfig } from 'lib';
+import { getApi, getConfig, parseMarkdownFile, setConfig } from 'lib';
 import { errToStr, isStr, log, numOrUndef } from 'utils';
 
-const getToken = (opt: Record<string, string>): string | undefined => {
+const getToken = (opt: Record<string, string | boolean>): string | undefined => {
   if (isStr(opt.token)) return opt.token;
   const storedToken = getConfig()?.token;
   if (storedToken) return storedToken;
@@ -24,18 +25,51 @@ program
   });
 
 program
+  .command('createPage')
+  .description('create a new page')
+  .argument('<file>', 'path to a markdown file with content')
+  .option('-t, --token <token>', 'access token of the Telegraph account')
+  .option('--title <title>', 'page title (required)')
+  .option('--author_name <author_name>', `author name, displayed below the article's title`)
+  .option(
+    '--author_url <author_url>',
+    `profile link, opened when users click on the author's name below the title. Can be any link, not necessarily to a Telegram profile or channel`,
+  )
+  .option('--return_content', 'if true, content field will be returned in Page object')
+  .action(
+    async (
+      fileName: string,
+      opt: { token?: string; title?: string; author_name?: string; author_url?: string; return_content?: boolean },
+    ) => {
+      const { title, author_name, author_url, return_content } = opt;
+      if (!title) {
+        return log.errAndExit('title required');
+      }
+      try {
+        const api = getApi({ token: getToken(opt) });
+        const content = parseMarkdownFile(fileName);
+        const resp = await api.createPage({ title, content, author_name, author_url, return_content });
+        log.json(resp);
+      } catch (err: unknown) {
+        log.errAndExit(errToStr(err));
+      }
+    },
+  );
+
+program
   .command('getPage')
   .description('get a page, returns a Page object on success')
   .argument(
     '<path>',
     'path to the Telegraph page (in the format Title-12-31, i.e. everything that comes after http://telegra.ph/)',
   )
-  .option('-c, --content', 'if true, content field will be returned in Page object')
-  .action(async (path: string, opt: { content?: boolean }) => {
+  .option('--return_content', 'if true, content field will be returned in Page object')
+  .action(async (path: string, opt: { return_content?: boolean }) => {
+    const { return_content } = opt;
     try {
       const api = getApi();
-      const data = await api.getPage(path, { return_content: opt.content });
-      log.json(data);
+      const resp = await api.getPage(path, { return_content });
+      log.json(resp);
     } catch (err: unknown) {
       log.errAndExit(errToStr(err));
     }
@@ -53,8 +87,8 @@ program
     const { offset, limit } = opt;
     try {
       const api = getApi({ token: getToken(opt) });
-      const data = await api.getPageList({ offset: numOrUndef(offset), limit: numOrUndef(limit) });
-      log.json(data);
+      const resp = await api.getPageList({ offset: numOrUndef(offset), limit: numOrUndef(limit) });
+      log.json(resp);
     } catch (err: unknown) {
       log.errAndExit(errToStr(err));
     }

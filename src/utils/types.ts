@@ -27,3 +27,5 @@ export const isFunc = (val: unknown): val is UnknownFunc => {
 };
 
 export const numOrUndef = (val?: string): number | undefined => (val ? parseInt(val, 10) : undefined);
+
+export const select = <K extends string | number, T extends unknown>(key: K, data: Record<K, T>) => data[key];
