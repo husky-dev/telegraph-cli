@@ -40,13 +40,13 @@ telegraph getPageList
 Get specific post:
 
 ```bash
-telegraph getPage Puteshestvie-po-Namibi --return_content
+telegraph getPage --path=Puteshestvie-po-Namibi --return_content
 ```
 
 Create post from markdown file:
 
 ```bash
-telegraph createPage --title="My awesome post" content.md
+telegraph createPage --title="My awesome post" --content=content.md
 ```
 
 Get more information about a specific command by using `-h` or `--help` flags:

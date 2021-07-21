@@ -2,7 +2,14 @@ import axios from 'axios';
 import { isStr, isUnknownDict, log } from 'utils';
 
 import { APIError } from './errors';
-import { TelegraphAccount, TelegraphAccountField, TelegraphChild, TelegraphPage, TelegraphPageList } from './types';
+import {
+  TelegraphAccount,
+  TelegraphAccountField,
+  TelegraphChild,
+  TelegraphPage,
+  TelegraphPageList,
+  TelegraphPageViews,
+} from './types';
 
 interface ApiOpt {
   token?: string;
@@ -87,11 +94,22 @@ export const getApi = (apiOpt?: ApiOpt) => {
 
   const createPage = async (data: {
     title: string;
+    content: TelegraphChild[];
     author_name?: string;
     author_url?: string;
-    content: TelegraphChild[];
     return_content?: boolean;
   }) => apiReq<TelegraphPage>({ auth: true, path: `createPage`, data });
+
+  const editPage = async (
+    path: string,
+    data: {
+      title: string;
+      content: TelegraphChild[];
+      author_name?: string;
+      author_url?: string;
+      return_content?: boolean;
+    },
+  ) => apiReq<TelegraphPage>({ auth: true, path: `editPage/${path}`, data });
 
   const getPage = async (path: string, data?: { return_content?: boolean }) =>
     apiReq<TelegraphPage>({ auth: false, path: `getPage/${path}`, data });
@@ -99,14 +117,19 @@ export const getApi = (apiOpt?: ApiOpt) => {
   const getPageList = async (data?: { limit?: number; offset?: number }) =>
     apiReq<TelegraphPageList>({ auth: true, path: 'getPageList', data });
 
+  const getViews = async (path: string, data?: { year?: string; month?: string; day?: string; hour?: string }) =>
+    apiReq<TelegraphPageViews>({ auth: false, path: `getViews/${path}`, data });
+
   return {
     createAccount,
     editAccountInfo,
     getAccountInfo,
     revokeAccessToken,
+    editPage,
     createPage,
     getPage,
     getPageList,
+    getViews,
   };
 };
 
